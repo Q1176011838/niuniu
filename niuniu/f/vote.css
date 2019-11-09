@@ -1,0 +1,259 @@
+
+html,
+body {
+    font-family: "Microsoft YaHei" ! important;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.logo {
+    width: 100%;
+    height: auto;
+}
+
+
+
+/*标题和简介*/
+.vote-title-box{
+    padding: 0 6vw; 
+}
+.vote-subtitle{
+    font-size: 20px;
+}
+
+
+
+/*倒计时*/
+.vote-deadline-box{
+    border-radius:3px; 
+    border: 1px solid #e8e8e8;
+    box-shadow: 0px 4px 8px #e3e3e3;
+    margin: 5vw;
+    padding: 1vw 0 4VW 0;
+    color: #707070;
+}
+
+.vote-deadline_text{
+    font-size:18px; 
+    text-align: center;
+}
+
+.vote-deadline_time{
+    display: flex;
+    font-size: 22px;
+    justify-content: space-around;
+}
+
+
+
+.vote-body{
+    color: #fb002b;
+    margin:  0  6vw;
+}
+
+.vote-poll{
+    width: 100%;
+    display: flex;
+    margin-bottom: 30px; 
+}
+.counterclaim-poll {
+    width: 8%;
+    text-align: left;
+    margin-left: 10px;
+    color: #3e50b5;
+    font-size: 14px;
+}
+
+.claim-poll {
+    width: 8%;
+    text-align: right;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.proportion-bar {
+    display: flex;
+    flex: 1;
+}
+
+.counterclaim-bar {
+    display: inline-block;
+    background: #0188FB;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    width: 50%;
+    transition: width 1s;
+    height: 20px;
+}
+
+.claim-bar {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    display: inline-block;
+    height: 20px;
+    background: #e51c23;
+    flex: 1;
+    transition: width 1s;
+}
+
+.vote-name {
+    margin: 1vw 6vw;
+    display: flex;
+    
+}
+
+.vote-name>div {
+    width: 50%;
+    font-size: 3.8vw;
+     
+}
+
+.vote-body-sign-left {
+    position: absolute;
+    top: 3px;
+    left: 5%;
+    transform: rotate(-35deg);
+    font-size: 3vw;
+    color: #e51c23;
+    font-weight: bold;
+}
+
+.vote-body-sign-right {
+    position: absolute;
+    top: 3px;
+    right: 5%;
+    transform: rotate(35deg);
+    font-size: 3vw;
+    color: #0188FB;
+    font-weight: bold;
+}
+
+.claim-name {
+    text-align: left;
+}
+
+.counter-name {
+    text-align: right;
+    color: #0188FB;
+}
+
+/*投票部分*/
+.vote-participant {
+    margin:  0 5vw 6vw 5vw;
+}
+
+.claim-participant,
+.counterclaim-participant {
+    width: 100%;
+    border-radius:5px; 
+    box-shadow: 0px 4px 15px #e3e3e3;
+    margin-bottom: 8vw;
+    
+}
+
+.participant-info-box{
+    padding: 0 3vw;
+}
+.participant-logo {
+    width: 100%;
+    height: auto;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px; 
+}
+
+.participant-info{
+    padding: 4vw 0 3vw 0;
+}
+.participant-info_header{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 11px; 
+}
+.claim-info-name{
+    margin: 0;
+    font-weight: bold;
+}
+.participant-info_footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.participant-info-poll{
+    font-size: 4vw;
+
+}
+.participant-theme{
+    font-size: 12px;
+    max-width: 60%; 
+}
+
+#counterclaim-info-poll{
+    color: #0188FB;
+}
+#claim-info-poll{
+    color: #fb002b;
+}
+.vote-btn {
+    width: 90px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    background: #0188FB;
+    border-radius: 3px;
+    color: #fff;
+    transition: .3s;
+}
+.vote-footer {
+    text-align: center;
+    color: #777777;
+    padding-bottom: 5px;
+    font-size: 12px;
+}
+
+/*弹窗*/
+.modal {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    transform: .2s;
+    display: none;
+}
+
+.modal-content {
+    width: 50vw;
+    background: #fff;
+    padding: 2vw;
+    text-align: center;
+    box-shadow: 0 0 5px #ccc;
+}
+
+.modal-header {
+    background: #fff;
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+}
+
+.modal-body {
+    height: 5vh;
+    text-align: center;
+    margin: 2.5vh 0;
+}
+
+.modal-close-btn {
+    border: none;
+    color: #fff;
+    background: #3f89ec;
+    padding: 0.5vh 4vw;
+    border-radius: 2px;
+    outline: none;
+    margin: 2vh 0;
+}

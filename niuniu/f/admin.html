@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   
+    <link rel="stylesheet" type="text/css" href="./datetimepicker-master//build/jquery.datetimepicker.min.css" />
+    <script src="./jquery.min.js"></script>
+    <script src="./datetimepicker-master/build/jquery.datetimepicker.full.min.js"></script>
+    <title>发起投票</title>
+    <style>
+        html,body{
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        .page{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-form{
+            text-align: right;
+        }
+        .form-control{
+            margin: 10px 0;
+        }
+        .form-label{
+            color: #666;
+            font-weight: 700;
+            display: inline-block;
+            width: 100px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        .form-input{
+            padding: 11px 10px;
+           
+            width: 300px;
+            transition:.3s;
+        }
+        .submit-btn{
+            width: 324px;
+            background:#3f89ec;
+            border:none;
+            padding: 10px 0;
+            box-shadow: 0px 0px 5px #d8d8d8;
+            color:#fff;
+            border-radius: 2px;
+        }
+        .submit-btn:hover{
+            background: #4490f7;
+           
+        }
+        #stop-btn{
+            position: absolute;
+            left: 20px;
+            top: 30px;
+            outline: none;
+            background-color: red;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            border: 1px solid #dbdbdb;
+        }
+    </style>
+</head>
+
+<body>
+    
+        <div class="page">
+            <button id="stop-btn">stop</button>
+            <div class="admin-form">
+                <div class="form-control">
+                    <label class="form-label" >主题 </label>
+                    <input class="form-input"  placeholder="请输入活动标题"  id="contest-title" />
+                </div>
+                <div class="form-control">
+                        <label class="form-label" >辩题 </label>
+                        <input class="form-input"  placeholder="请输入辩题"  id="contest-debate" />
+                </div>
+                <div class="form-control">
+                    <label class="form-label">正方观点 </label>
+                    <input class="form-input"  placeholder="请输入正方观点" id="claim-view" />
+                </div>
+                <div class="form-control">
+                    <label class="form-label">正方文案 </label>
+                    <input class="form-input"   placeholder="请输入正方文案"  id="claim-text" />
+                </div>
+                <div class="form-control">
+                    <label class="form-label">反方观点 </label>
+                    <input class="form-input"  placeholder="请输入反方观点" id="counterclaim-view" />
+                </div>
+                <div class="form-control">
+                    <label class="form-label">反方文案 </label>
+                    <input class="form-input"  placeholder="请输入反方文案"  id="counterclaim-text" />
+                </div>
+                <div class="form-control">
+                    <label class="form-label">投票截止时间 </label>
+                    <input class="form-input"  type="text"  placeholder="请输入投票截止时间"  id="deadline" />
+                </div>
+                <div class="form-control">
+                    <label class="form-label">管理员密码 </label>
+                    <input class="form-input"  type="password"  placeholder="请输入管理员密码"  id="root-pwd" />
+                </div>
+                <div class="form-contro;">
+                    <button class="submit-btn" id="submit-btn">提交</button>
+                </div>
+            </div>
+        </div>
+    
+</body>
+
+<script type="text/javascript">
+   $("#deadline").datetimepicker();
+   var ws = new WebSocket("wss://www.achaonihao.com:9100/");      
+   var isConect=false;
+  
+
+   $('#stop-btn').click(function(){
+        var ws = new WebSocket("wss://www.achaonihao.com:9100/");   
+        ws.onopen=function(){
+            isConect=true;
+            ws.send("k=stop");
+        }   
+      
+       alert("已经停止")
+   })
+    $("#submit-btn").click(function(){
+        let deadline=$("#deadline").val()
+        let contest_debate=$("#contest-debate").val()
+        let contest_title=$("#contest-title").val()
+        let claim_view=$("#claim-view").val()
+        let claim_text=$("#claim-text").val()
+        let counterclaim_view=$("#counterclaim-view").val()
+        let counterclaim_text=$("#counterclaim-text").val()
+        let root_pwd=$("#root-pwd").val()
+      /*  console.log(root_pwd)
+        console.log(contest_title)
+        console.log(claim_name)
+        console.log(claim_theme)
+        console.log(counterclaim_name)
+         console.log(date.getTime())
+        console.log(date.valueOf())
+        console.log(counterclaim_theme)*/
+        let date=new Date(deadline)
+        date=date.getTime()
+       
+        if(deadline==""||contest_title==""||contest_debate==""
+        ||claim_view==""||claim_text==""||counterclaim_view==""||root_pwd==""||counterclaim_text==""){
+            alert("请填写完整内容!")    
+        }
+        else{
+            var data={
+                m_title:contest_title,
+                title:contest_debate,
+                view1:claim_view,
+                view2:counterclaim_view,
+                content1:claim_text,
+                content2:counterclaim_text,
+                times:date,
+                root_pwd:root_pwd
+            }
+           
+            data=JSON.stringify(data)
+           
+           $.ajax({
+               url:"https://www.achaonihao.com/xier/niuniu/manage.php",
+               datatype:"json",
+               type:"post",
+               data:data,
+               success:function(data){
+                   
+                    if(data==0){
+                        alert("密码错误");
+                    }
+                    else{
+                        alert("提交成功")
+                    }
+               },
+               error:function(err){
+                   console.log(err)
+                   console.log("error:管理员密码错误!")
+               }
+           })
+        }
+    })
+</script>
+</html>

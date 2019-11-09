@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>牛牛汇</title>
+</head>
+
+<link rel="stylesheet" href="vote.css" type="text/css" />
+<body>
+    <div id="page">
+        <div class="header">
+            <div class="logo-box">
+                <img src="./image/logo.png" class="logo" />
+            </div>
+        </div>
+        <div class="vote-title-box" >
+            <h2 class="vote-title" id="vote-title">
+            </h2>
+            <p class="vote-subtitle" id="vote-debate">
+            </p>
+        </div>
+        <div class="vote-deadline-box">
+                <p class="vote-deadline_text">距离投票结束还有</p>
+                <div class="vote-deadline_time">
+                    <span id="deadline-days">00小时</span>
+                    <span id="deadline-hours">00分</span>
+                    <span id="deadline-minutes">00秒</span>
+                </div>
+        </div>
+
+        <div class="vote-body">
+            <div class="vote-name">
+                    <div class="claim-name" id="claim-name">
+                    </div>
+                    <div class="counter-name" id="counterclaim-name">
+                    </div>
+            </div>
+            <div class="vote-poll-box">
+                <div class="vote-poll">
+                    <div class="claim-poll" id="claim-poll"></div>
+                    <div class="proportion-bar">
+                        <div class="claim-bar" id="claim-bar"></div>
+                        <div class="counterclaim-bar" id="counterclaim-bar"></div>
+                    </div>
+                    <div class="counterclaim-poll" id="counterclaim-poll"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="vote-participant">
+            <div class="claim-participant">
+                <img class="participant-logo" src="./image/claim-participant-logo.png" />
+                <div class="participant-info-box">
+                    <div class="participant-info">
+                        <div class="participant-info_header">
+                            <p class="claim-info-name" id="claim-info-name"></p>
+                            <div class="participant-info-poll">
+                                    <span id="claim-info-poll"></span>
+                            </div>
+                        </div>
+                        <div class="participant-info_footer">
+                                <div class="participant-theme" id="claim-theme">
+                                </div>
+                                <button class="vote-btn" id="vote-claim">投票</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="counterclaim-participant">
+                <img class="participant-logo" src="./image/counterclaim-participant-logo.png" />
+                <div class="participant-info-box">
+                        <div class="participant-info">
+                            <div class="participant-info_header">
+                                    <p class="claim-info-name" id="counterclaim-info-name"></p>
+                                    <div class="participant-info-poll">
+                                            <span id="counterclaim-info-poll"></span>
+                                    </div>
+                            </div>
+                            <div class="participant-info_footer">
+                                    <div class="participant-theme" id="counterclaim-theme">
+                                    </div>
+                                    <button class="vote-btn" id="vote-counterclaim">投票</button>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="vote-footer">
+            Copyright © West2online All Rights Reserved
+        </div>
+
+    </div>
+    <div class="modal" id="modal">
+        <div class="modal-content">
+
+            <div class="modal-body" id="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn" id="modal-close-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="./jquery.min.js"></script>
+<script>
+    var modal = document.getElementById("modal")
+    var modal_body = document.getElementById("modal-body")
+    var modal_close_btn = document.getElementById("modal-close-btn")
+    var claim_poll = document.getElementById("claim-poll")
+    var counterclaim_poll = document.getElementById("counterclaim-poll")
+    var vote_claim = document.getElementById("vote-claim")
+    var vote_counterclaim = document.getElementById("vote-counterclaim")
+    var store = window.localStorage;
+    store.setItem("num", 0);
+    var limit = 0;
+    var timer=null;
+    var isConect=false;
+    changeBtnState();
+    var id=guid()
+    var gud=getCookie("guid")
+    if(gud=="")setCookie("guid",id,100)
+    
+    var ws = new WebSocket("wss://www.achaonihao.com:9100/");      
+    
+    modal_close_btn.addEventListener('click', function () {
+        modal.style.display = "none";
+    })
+    vote_claim.addEventListener('click', () => {
+        if (limit <= 0) {
+            modal_body.innerHTML = "该场投票已经结束!"
+            modal.style.display = "flex"
+            return;
+        }
+        if (store["btn"] == 1) {
+            return;
+        }
+        store.setItem("btn", 1)
+        modal_body.innerHTML = "投票成功"
+        modal.style.display = "flex"
+        changeBtnState()
+        let ip= getCookie("guid");
+        var data="ip="+ip+'&'+"vote="+vote_claim.index;
+       
+    
+        if(isConect){
+            ws.send(data);
+        }
+    })
+    vote_counterclaim.addEventListener('click', () => {
+        if (limit <= 0) {
+            modal_body.innerHTML = "该场投票已经结束!"
+            modal.style.display = "flex"
+            return;
+        }
+        if (store["btn"] == 2) {
+            return;
+        }
+        modal_body.innerHTML = "投票成功"
+        modal.style.display = "flex"
+        store.setItem("btn", 2)
+        changeBtnState()
+        let ip= getCookie("guid");
+        var data="ip="+ip+'&'+"vote="+vote_counterclaim.index;
+        
+        if(isConect){
+            ws.send(data);
+        }
+    })
+
+    
+    ws.onerror = function(e) {
+        isConect=false;
+        
+    };
+    ws.onopen = function() {
+        isConect=true;
+        ws.send("k=begin");
+    };
+    
+    ws.onmessage = function (evt) { 
+        var data = evt.data;
+        data=JSON.parse(data)
+        
+        let title=data.m_title
+        let deadline=data.times
+        let contest_debate=data.title
+        let contest_title=data.m_title
+        let claim_view=data[0].view
+        let claim_text=data[0].content
+        let counterclaim_view=data[1].view
+        let counterclaim_text=data[1].content
+        let claim_poll = data[0].piao
+        let counterclaim_poll=data[1].piao
+
+        vote_claim.index = data[0].id;
+        vote_counterclaim.index = data[1].id;
+
+        $("#vote-title").text(contest_title);
+        $("#vote-debate").text(contest_debate)
+
+        $("#claim-poll").text(claim_poll)
+        $("#claim-info-poll").text(claim_poll + "票")
+        $("#claim-name").text(claim_view)
+        $("#claim-info-name").text('正方:'+claim_view)
+        $("#claim-theme").text(claim_text)
+
+        $("#counterclaim-poll").text(counterclaim_poll)
+        $("#counterclaim-info-poll").text(counterclaim_poll + "票")
+        $("#counterclaim-name").text(counterclaim_view)
+        $("#counterclaim-info-name").text("反方:"+counterclaim_view)
+        $("#counterclaim-theme").text(counterclaim_text)
+      
+        changeBar()
+        var nowTime = new Date();
+        var targetTime = new Date(parseInt(data.times));
+        var spanTime = targetTime - nowTime;
+        limit = spanTime;
+       
+        if(limit>0&&timer==null){
+            countdown();
+        }
+        else if(limit<0){
+            store.setItem("btn", -1);
+            changeBtnState();
+            $("#deadline-days").text('00小时')
+            $("#deadline-hours").text('00分钟')
+            $("#deadline-minutes").text('00秒')
+            clearTimeout(timer)
+            timer=null;
+        }
+    };
+    
+    ws.onclose = function() { 
+        isConect=false;
+    };
+
+    function changeBtnState() {
+        if (store["btn"] == null||store["btn"] == -1){
+            store.setItem("btn", -1)
+            vote_claim.style.background = "#0188FB"
+            vote_counterclaim.style.background = "#0188FB"
+            vote_claim.innerText = "投票"
+            vote_counterclaim.innerText = "投票"
+        }
+        else if (store["btn"] == 1) {
+            vote_claim.style.background = "#b62c34"
+            vote_counterclaim.style.background = "#0188FB"
+            vote_claim.innerText = "已投票"
+            vote_counterclaim.innerText = "投票"
+        }
+        else if (store["btn"] == 2) {
+            vote_claim.style.background = "#0188FB"
+            vote_counterclaim.style.background = "#b62c34"
+            vote_claim.innerText = "投票"
+            vote_counterclaim.innerText = "已投票"
+        }
+    }
+    function changeBar() {
+        var counterclaim_bar = document.getElementById("counterclaim-bar")
+        var claim_bar = document.getElementById("claim-bar")
+        let sum = parseInt(claim_poll.innerText) + parseInt(counterclaim_poll.innerText)
+        let wid = parseInt(counterclaim_poll.innerText) / sum * 100;
+    
+        if(wid<5)wid=5;
+        if(wid>95)wid=95;
+        if (sum == 0) {
+            counterclaim_bar.style.width = "50%"
+        }
+        else {
+            counterclaim_bar.style.width = wid + "%";
+        }
+    }
+    function countdown() {
+        
+        var spanTime=limit;
+        if (limit<=0) {
+            store.setItem("btn", -1)
+            store.setItem("num", 1);
+            clearTimeout(timer)
+            timer=null;
+        } else {
+
+            limit-=1000;
+            store.setItem("num", 0);
+            var hours = Math.floor(spanTime / (1000 * 60 * 60));
+            spanTime -= hours * 60 * 60 * 1000;
+            var days = parseInt(hours / 24);
+            hours %= 24;
+            var minute = Math.floor(spanTime / (1000 * 60));
+            spanTime -= minute * 60 * 1000;
+            var second = Math.floor(spanTime / 1000);
+            days < 10 ? days = '0' + days : days;
+            hours < 10 ? hours = '0' + hours : hours;
+            minute < 10 ? minute = '0' + minute : minute;
+            second < 10 ? second = '0' + second : second;
+          
+            $("#deadline-days").text(hours+'小时')
+            $("#deadline-hours").text(minute+'分钟')
+            $("#deadline-minutes").text(second+'秒')
+            timer=setTimeout(countdown,1000);
+        }
+    }
+    function guid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+        });
+    }
+    function getCookie(objName) {
+        var arrStr = document.cookie.split("; ");
+        for (var i = 0; i < arrStr.length; i++) {
+            var temp = arrStr[i].split("=");
+            if (temp[0] == objName) return unescape(temp[1]);
+        }
+        return "";
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname + "=" + escape(cvalue) + "; " + expires;
+    }
+</script>
+</html>
